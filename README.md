@@ -1,6 +1,6 @@
 <div align="center">
   
-  <img src="https://images.unsplash.com/photo-1726401580413-ebaf3c2586b2?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Banner PneumoAssist" width="100%" style="border-radius: 12px; margin-bottom: 20px; object-fit: cover; height: 250px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <img src="[https://images.unsplash.com/photo-1726401580413-ebaf3c2586b2?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Banner PneumoAssist](https://images.unsplash.com/photo-1519003300449-424ad0405076?q=80&w=698&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)" width="100%" style="border-radius: 12px; margin-bottom: 20px; object-fit: cover; height: 250px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
 
   # 🫁 PneumoAssist
   **Plataforma de Inteligência Clínica para Triagem Respiratória**
