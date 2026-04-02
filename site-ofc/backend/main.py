@@ -12,7 +12,7 @@ import uvicorn
 VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 # O modelo de Texto Estável:
 TEXT_MODEL = "llama-3.3-70b-versatile"
-API_KEY = "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"
+API_KEY = ""
 # ==========================================
 
 app = FastAPI()
