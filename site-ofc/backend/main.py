@@ -13,7 +13,7 @@ VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 # Modelo de Texto para conversação
 TEXT_MODEL = "llama-3.3-70b-versatile"
 # Chave de API Groq
-API_KEY = "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"
+API_KEY = ""
 # ==========================================
 
 app = FastAPI()
