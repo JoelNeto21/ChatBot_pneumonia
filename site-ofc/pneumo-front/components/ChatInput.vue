@@ -16,7 +16,6 @@
       @drop.prevent="handleDrop"
       :class="[
         'bg-slate-100 dark:bg-[#1f2228] transition-all flex flex-col relative',
-        // Se tiver imagens anexadas ou texto longo, fica arredondado tipo card, senão fica uma pílula perfeita
         (imagePreviews.length > 0 || messageText.length > 50) ? 'rounded-3xl p-2' : 'rounded-[32px] p-1.5',
         isDragging ? 'ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 scale-[1.01]' : 'focus-within:ring-1 focus-within:ring-slate-300 dark:focus-within:ring-white/20 shadow-sm'
       ]"
@@ -24,7 +23,7 @@
       
       <div v-if="isDragging" class="absolute inset-0 z-50 flex items-center justify-center bg-white/90 dark:bg-[#1f2228]/90 backdrop-blur-sm rounded-[inherit] border-2 border-dashed border-indigo-500">
         <div class="text-indigo-500 font-bold flex items-center gap-2 animate-bounce text-sm">
-          <i class="fas fa-cloud-upload-alt text-lg"></i> Solte os exames
+          <i class="fas fa-cloud-upload-alt text-lg"></i> Solte os exames aqui (Máx. 4)
         </div>
       </div>
 
@@ -44,7 +43,7 @@
           @click="triggerFileInput" 
           :disabled="imagePreviews.length >= MAX_IMAGES"
           class="p-3 w-10 h-10 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors rounded-full focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed mb-0.5 ml-0.5" 
-          title="Anexar Exames"
+          title="Anexar Exames (Máximo 4)"
         >
           <i class="fas fa-plus text-[16px]"></i>
         </button>
@@ -96,14 +95,14 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted } from 'vue';
 
-// Adicionada a prop "isGenerating" para sabermos quando a IA está a escrever
 const props = defineProps<{ isGenerating?: boolean }>();
 
 const emit = defineEmits<{ 
   (e: 'sendMessage', payload: { text: string; images: string[] }): void;
-  (e: 'stopGeneration'): void; // Novo evento para parar a IA
+  (e: 'stopGeneration'): void;
 }>();
 
+// Constantes de Limite Restrito
 const MAX_CHARS = 2000;
 const MAX_IMAGES = 4;
 
@@ -120,7 +119,7 @@ const isNearLimit = computed(() => messageText.value.length >= MAX_CHARS * 0.9);
 
 const inputPlaceholder = computed(() => {
   if (isRecording.value) return 'A ouvir a sua voz...';
-  if (imagePreviews.value.length >= MAX_IMAGES) return 'Limite atingido. Descreva os sintomas...';
+  if (imagePreviews.value.length >= MAX_IMAGES) return 'Limite de imagens atingido. Descreva os sintomas...';
   return 'Pergunte ao PneumoAssist...';
 });
 
@@ -128,6 +127,7 @@ const isSendDisabled = computed(() => {
   return (!messageText.value.trim() && imagePreviews.value.length === 0) || isRecording.value;
 });
 
+// Configuração do Áudio (com limite de texto aplicado)
 onMounted(() => {
   const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
   if (SpeechRecognition) {
@@ -150,7 +150,7 @@ onMounted(() => {
       if (finalTranscript) {
         const currentText = messageText.value.trim();
         const newText = currentText ? `${currentText} ${finalTranscript}` : finalTranscript;
-        messageText.value = newText.substring(0, MAX_CHARS);
+        messageText.value = newText.substring(0, MAX_CHARS); // Força o limite de caracteres
         adjustHeight();
       }
     };
@@ -173,16 +173,17 @@ const triggerFileInput = () => {
   fileInputRef.value?.click();
 };
 
+// Processamento de Imagens Seguro
 const processFile = (file: File) => {
   if (!file.type.startsWith('image/')) return;
-  if (imagePreviews.value.length >= MAX_IMAGES) return;
+  if (imagePreviews.value.length >= MAX_IMAGES) return; // Bloqueio Extra de Segurança
 
   const reader = new FileReader();
   reader.onload = (e) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      const MAX_SIZE = 800;
+      const MAX_SIZE = 1024; // Aumentado para 1024px para manter detalhe clínico
       let { width, height } = img;
 
       if (width > height && width > MAX_SIZE) {
@@ -196,14 +197,23 @@ const processFile = (file: File) => {
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0, width, height);
-      imagePreviews.value.push(canvas.toDataURL('image/jpeg', 0.8));
+      if (ctx) {
+        ctx.fillStyle = "#FFFFFF"; // Fundo branco forçado para evitar PNGs pretos
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+      }
+      
+      // Dupla verificação antes de inserir na array
+      if (imagePreviews.value.length < MAX_IMAGES) {
+        imagePreviews.value.push(canvas.toDataURL('image/jpeg', 0.8));
+      }
     };
     img.src = e.target?.result as string;
   };
   reader.readAsDataURL(file);
 };
 
+// Upload via Clique (Slice aplica limite exato)
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files?.length) {
@@ -214,6 +224,7 @@ const handleFileChange = (event: Event) => {
   }
 };
 
+// Paste via Ctrl+V (Garante que só cola até ao limite)
 const handlePaste = (e: ClipboardEvent) => {
   if (e.clipboardData?.items) {
     let slotsAvailable = MAX_IMAGES - imagePreviews.value.length;
@@ -230,6 +241,7 @@ const handlePaste = (e: ClipboardEvent) => {
   }
 };
 
+// Upload via Drag & Drop (Slice aplica limite exato)
 const handleDrop = (e: DragEvent) => {
   isDragging.value = false;
   if (e.dataTransfer?.files) {
@@ -253,12 +265,16 @@ const adjustHeight = () => {
   });
 };
 
-// Nova Função Dinâmica: Envia a mensagem OU para a geração da IA
+// Enviar a mensagem para a IA
 const handleMainAction = () => {
   if (props.isGenerating) {
     emit('stopGeneration');
   } else if (!isSendDisabled.value) {
-    emit('sendMessage', { text: messageText.value, images: [...imagePreviews.value] });
+    // Força o corte de texto nos 2000 caracteres antes de enviar por segurança
+    const safeText = messageText.value.substring(0, MAX_CHARS);
+    
+    emit('sendMessage', { text: safeText, images: [...imagePreviews.value] });
+    
     messageText.value = '';
     imagePreviews.value = [];
     nextTick(() => { 
