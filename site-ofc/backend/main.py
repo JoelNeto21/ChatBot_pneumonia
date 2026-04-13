@@ -1,4 +1,3 @@
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -14,7 +13,6 @@ VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 # Modelo de Texto para conversação
 TEXT_MODEL = "llama-3.3-70b-versatile"
 # Chave de API Groq
-API_KEY = os.getenv("GROQ_API_KEY")
 # ==========================================
 
 app = FastAPI()
