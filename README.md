@@ -2,14 +2,6 @@
 <<<<<<< HEAD
 
   # 🫁 PneumoAssist
-  
-  **Inteligência Clínica Especializada para Saúde Respiratória**
-
-  <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.demolab.com?font=Plus+Jakarta+Sans&weight=600&size=20&duration=3000&pause=1000&color=10B981&center=true&vCenter=true&width=800&lines=An%C3%A1lise+de+Raio-X+com+Llama+3.2+Vision.;Triagem+inteligente+de+sintomas+respirat%C3%B3rios.;Infer%C3%AAncia+ultra-r%C3%A1pida+via+Groq+LPU.;Suporte+%C3%A0+decis%C3%A3o+cl%C3%ADnica+segura+e+precisa." alt="Typing SVG" />
-=======
-
-  # 🫁 PneumoAssist
   **Plataforma de Inteligência Clínica para Triagem Respiratória**
 
   <a href="https://git.io/typing-svg">
